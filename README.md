@@ -48,7 +48,8 @@ data下面的数据：<br>
 --dropout=0.3 \
 ```
 ```python
-2021-08-18 12:17:05,417 - INFO - main.py - test - 144 -               precision    recall  f1-score   support
+2021-08-18 12:17:05,417 - INFO - main.py - test - 144 -               
+precision    recall  f1-score   support
 
       object       0.76      0.89      0.82     38656
      subject       0.76      0.85      0.80     25103
