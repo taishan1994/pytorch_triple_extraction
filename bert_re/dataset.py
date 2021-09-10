@@ -15,25 +15,22 @@ except Exception as e:
 class ReDataset(Dataset):
     def __init__(self, features):
         self.nums = len(features)
-
-        self.token_ids = (torch.tensor(example.token_ids).long() for example in features)
-        self.attention_masks = (torch.tensor(example.attention_masks).float() for example in features)
-        self.token_type_ids = (torch.tensor(example.token_type_ids).long() for example in features)
-        self.labels = (torch.tensor(example.labels).long() for example in features)
-        self.ids = (torch.tensor(example.ids).long() for example in features)
+        self.features = features
 
     def __len__(self):
         return self.nums
 
     def __getitem__(self, index):
+        example = self.features[index]
+        
         data = {
-            'token_ids': next(self.token_ids),
-            'attention_masks': next(self.attention_masks),
-            'token_type_ids': next(self.token_type_ids),
+            'token_ids': torch.tensor(example.token_ids).long()),
+            'attention_masks': torch.tensor(example.attention_masks).float(),
+            'token_type_ids': torch.tensor(example.token_type_ids).long(),
         }
 
-        data['labels'] = next(self.labels)
-        data['ids'] = next(self.ids)
+        data['labels'] = torch.tensor(example.labels).long()
+        data['ids'] = torch.tensor(example.ids).long()
 
         return data
 
