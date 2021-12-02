@@ -15,7 +15,7 @@ data下面的数据：<br>
 
 # 说明
 命名实体识别基于bert_bilstm_crf，识别出句子中的主体(subject)和客体(object)。相关功能在bert_bilstm_crf_ner下。存储的模型在bert_bilstm_crf_ner/checkpoints/bert_bilsm_crf/model.pt<br>
-关系抽取基于bert，识别出主体和客体之间的关系。相关功能在bert_re下。存储的模型位于bert_re/checkpoints/best.py<br>
+关系抽取基于bert，识别出主体和客体之间的关系。相关功能在bert_re下。存储的模型位于bert_re/checkpoints/best.pt<br>
 具体相关的数据位于/data/下面，可以去查看。<br>
 
 # 命名实体识别
