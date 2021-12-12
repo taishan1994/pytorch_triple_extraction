@@ -173,7 +173,9 @@ class Trainer:
                                            return_token_type_ids=True,
                                            return_attention_mask=True,
                                            return_tensors='pt')
-            token_ids = inputs['input_ids'].to(self.device)
+ 
+            # token_ids = inputs['input_ids'].to(self.device)
+            token_ids = inputs['input_ids'].to(self.device).long()
             attention_masks = inputs['attention_mask'].to(self.device)
             token_type_ids = inputs['token_type_ids'].to(self.device)
             ids = torch.from_numpy(np.array([[x+1 for x in ids]])).to(self.device)
