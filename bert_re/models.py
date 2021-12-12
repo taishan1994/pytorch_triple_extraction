@@ -36,7 +36,7 @@ class BertForRelationExtraction(nn.Module):
         # 获取每一个token的嵌入
         seq_out = bert_outputs[0]  # [batchsize, max_len, 768]
         batch_size = seq_out.size(0)
-        seq_ent = torch.cat([torch.index_select(seq_out[i,:,:],0,ids[i,:]).unsqueeze(0) for i in range(batch_size)], 0) # [batchsize, 4, 768]
+        seq_ent = torch.cat([torch.index_select(seq_out[i,:,:],0,ids[i,:].long()).unsqueeze(0) for i in range(batch_size)], 0) # [batchsize, 4, 768]
         # print(seq_ent.shape)
         seq_ent = self.dropout(seq_ent)
         seq_ent = seq_ent.view(batch_size, -1)
