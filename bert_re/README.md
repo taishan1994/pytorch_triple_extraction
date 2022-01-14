@@ -1,6 +1,6 @@
 # pytorch_bert_relation_extraction
 
-这里使用的数据和外面的不太一样，以外面的说明为主。<br><br>
+**这里使用的数据和外面的不太一样，以外面的说明为主。<br><br>**
 
 基于pytorch+bert的中文关系抽取<br>
 该项目针对于中文实体对进行关系抽取，例如：<br>
