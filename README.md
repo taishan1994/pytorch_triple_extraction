@@ -198,3 +198,7 @@ python get_result.py
 
 # 参考
 借鉴了该博客的思想：https://www.cnblogs.com/jclian91/p/12499062.html （基于keras）<br>
+
+# 补充
+更为简单的三元组抽取，联合关系抽取，不用再先进行实体识别，再进行关系分类：
+https://github.com/taishan1994/OneRel_chinese
