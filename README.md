@@ -201,5 +201,5 @@ python get_result.py
 
 # 补充
 更为简单的三元组抽取，联合关系抽取，不用再先进行实体识别，再进行关系分类：
-https://github.com/taishan1994/OneRel_chinese <br>
-[信息抽取三剑客：实体抽取、关系抽取、事件抽取](https://github.com/taishan1994/chinese_information_extraction)
+- https://github.com/taishan1994/OneRel_chinese <br>
+- [信息抽取三剑客：实体抽取、关系抽取、事件抽取](https://github.com/taishan1994/chinese_information_extraction)
