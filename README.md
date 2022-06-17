@@ -1,4 +1,12 @@
 # pytorch_triplet_extraction
+延申：
+- 一种级联Bert用于命名实体识别，解决标签过多问题：https://github.com/taishan1994/pytorch_Cascade_Bert_Ner
+- 一种多头选择Bert用于命名实体识别：https://github.com/taishan1994/pytorch_Multi_Head_Selection_Ner
+- 中文命名实体识别最新进展：https://github.com/taishan1994/awesome-chinese-ner
+- 信息抽取三剑客：实体抽取、关系抽取、事件抽取：https://github.com/taishan1994/chinese_information_extraction
+- 一种基于机器阅读理解的命名实体识别：https://github.com/taishan1994/BERT_MRC_NER_chinese
+- W2NER：命名实体识别最新sota：https://github.com/taishan1994/W2NER_predict
+****
 基于pytorch的中文三元组提取（命名实体识别+关系抽取）<br>
 预训练模型为<a href='https://huggingface.co/hfl/chinese-roberta-wwm-ext'>chinese-roberta-wwm-ext</a><br>
 训练好的命名实体识别模型：<br>
