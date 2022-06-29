@@ -1,5 +1,7 @@
 # pytorch_triplet_extraction
 延申：
+- 基于casrel的三元组抽取，使用更加方便：https://github.com/taishan1994/pytorch_casrel_triple_extraction
+-
 - 一种基于globalpointer的命名实体识别：https://github.com/taishan1994/pytorch_GlobalPointer_Ner
 - 一种基于TPLinker_plus的命名实体识别：https://github.com/taishan1994/pytorch_TPLinker_Plus_Ner
 - 一种one vs rest方法进行命名实体识别：https://github.com/taishan1994/pytorch_OneVersusRest_Ner
