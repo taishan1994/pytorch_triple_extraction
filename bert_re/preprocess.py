@@ -181,7 +181,7 @@ if __name__ == '__main__':
     label2id = {}
     id2label = {}
     with open(re_mid_data_path+'/rels.txt','r') as fp:
-        labels = fp.read().strip().split('\n')
+        labels = fp.read().split('\n')
     for i,j in enumerate(labels):
         label2id[j] = i
         id2label[i] = j
