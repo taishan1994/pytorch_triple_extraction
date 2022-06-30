@@ -1,5 +1,6 @@
 # pytorch_triplet_extraction
 延申：
+- 基于GlobalPointer的三元组抽取，又快有准确：https://github.com/taishan1994/pytorch_GlobalPointer_triple_extraction
 - 基于casrel的三元组抽取，使用更加方便：https://github.com/taishan1994/pytorch_casrel_triple_extraction
 ****
 - 一种基于globalpointer的命名实体识别：https://github.com/taishan1994/pytorch_GlobalPointer_Ner
