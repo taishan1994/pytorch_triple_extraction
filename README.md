@@ -74,6 +74,10 @@ weighted avg       0.76      0.88      0.81     63759
 ```
 
 # 关系抽取结果
+### 温馨提示
+- 由于数据量太大，在关系抽取main.py里面限制了在4000步保存模型并停止，可以酌情修改。
+- 在main.py里面的训练、验证、测试和预测代码根据需要进行注释或打开。
+- pytorch_triple_extraction/data/mid_re_data/rels.txt里面最后有一个空的，因此num_tags=实际标签数+1，这里就不进行改动了，有需要的话可以删除掉最后的空标签，那么num_tags就是实际标签数。（不使用我已经训练好的模型）。
 在bert_re文件夹下的main.py是主运行程序，可用以下命令运行训练测试和预测：<br>
 ```python
 !python main.py \
