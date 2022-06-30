@@ -24,7 +24,7 @@ class ReDataset(Dataset):
         example = self.features[index]
         
         data = {
-            'token_ids': torch.tensor(example.token_ids).long()),
+            'token_ids': torch.tensor(example.token_ids).long(),
             'attention_masks': torch.tensor(example.attention_masks).float(),
             'token_type_ids': torch.tensor(example.token_type_ids).long(),
         }
