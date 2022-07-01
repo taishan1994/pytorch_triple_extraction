@@ -35,7 +35,7 @@ data下面的数据：<br>
 不要在pycharm里面直接运行，在命令行使用带参数运行，即main.py后面的一连串东东。
 
 # 命名实体识别
-在bert_bilstm_crf_ner文件夹下的main.py是主运行程序，可用以下命令运行训练测试和预测：<br>
+在bert_bilstm_crf_ner文件夹下的main.py是主运行程序，进入到bert_bilstm_crf_ner文件夹下，可用以下命令运行训练测试和预测：<br>
 ```python
 !python main.py \
 --bert_dir="../model_hub/chinese-roberta-wwm-ext/" \
@@ -81,7 +81,7 @@ weighted avg       0.76      0.88      0.81     63759
 - 在main.py里面的训练、验证、测试和预测代码根据需要进行注释或打开。
 - pytorch_triple_extraction/data/mid_re_data/rels.txt里面最后有一个空的，因此num_tags=实际标签数+1，这里就不进行改动了，有需要的话可以删除掉最后的空标签，那么num_tags就是实际标签数。（不使用我已经训练好的模型）。
 
-在bert_re文件夹下的main.py是主运行程序，可用以下命令运行训练测试和预测：<br>
+在bert_re文件夹下的main.py是主运行程序，进入到bert_re文件夹下，可用以下命令运行训练测试和预测：<br>
 ```python
 !python main.py \
 --bert_dir="../model_hub/chinese-roberta-wwm-ext/" \
