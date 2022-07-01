@@ -44,6 +44,7 @@ class BertForRelationExtraction(nn.Module):
         return seq_ent
 
 if __name__ == '__main__':
+    """更换了新的数据读取的方式，以下不适用了"""
     args = bert_config.Args().get_parser()
     args.log_dir = './logs/'
     args.max_seq_len = 128
