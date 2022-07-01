@@ -10,6 +10,7 @@ import numpy as np
 import pickle
 from torch.utils.data import DataLoader, RandomSampler
 from transformers import BertTokenizer
+from tqdm import tqdm
 
 try:
   import bert_config
@@ -19,6 +20,7 @@ try:
   import dataset
   import models
   import utils
+  from data_loader import Collate, MyDataset
 except Exception as e:
   from . import bert_config
   from . import preprocess
@@ -27,6 +29,7 @@ except Exception as e:
   from . import dataset
   from . import models
   from . import utils
+  from .data_loader import Collate, MyDataset
 
 logger = logging.getLogger(__name__)
 
@@ -69,11 +72,11 @@ class Trainer:
         for epoch in range(args.train_epochs):
             for train_step, train_data in enumerate(self.train_loader):
                 self.model.train()
-                token_ids = train_data['token_ids'].to(self.device)
-                attention_masks = train_data['attention_masks'].to(self.device)
-                token_type_ids = train_data['token_type_ids'].to(self.device)
-                labels = train_data['labels'].to(self.device)
-                ids = train_data['ids'].to(self.device)
+                token_ids = train_data[0].to(self.device)
+                attention_masks = train_data[1].to(self.device)
+                token_type_ids = train_data[2].to(self.device)
+                labels = train_data[3].to(self.device)
+                ids = train_data[4].to(self.device)
                 train_outputs = self.model(token_ids, attention_masks, token_type_ids, ids)
                 loss = self.criterion(train_outputs, labels)
                 self.optimizer.zero_grad()
@@ -115,11 +118,11 @@ class Trainer:
         dev_targets = []
         with torch.no_grad():
             for dev_step, dev_data in enumerate(self.dev_loader):
-                token_ids = dev_data['token_ids'].to(self.device)
-                attention_masks = dev_data['attention_masks'].to(self.device)
-                token_type_ids = dev_data['token_type_ids'].to(self.device)
-                labels = dev_data['labels'].to(self.device)
-                ids = dev_data['ids'].to(self.device)
+                token_ids = dev_data[0].to(self.device)
+                attention_masks = dev_data[1].to(self.device)
+                token_type_ids = dev_data[2].to(self.device)
+                labels = dev_data[3].to(self.device)
+                ids = dev_data[4].to(self.device)
                 outputs = self.model(token_ids, attention_masks, token_type_ids, ids)
                 loss = self.criterion(outputs, labels)
                 # val_loss = val_loss + ((1 / (dev_step + 1))) * (loss.item() - val_loss)
@@ -140,12 +143,12 @@ class Trainer:
         test_outputs = []
         test_targets = []
         with torch.no_grad():
-            for test_step, test_data in enumerate(self.test_loader):
-                token_ids = test_data['token_ids'].to(self.device)
-                attention_masks = test_data['attention_masks'].to(self.device)
-                token_type_ids = test_data['token_type_ids'].to(self.device)
-                labels = test_data['labels'].to(self.device)
-                ids = test_data['ids'].to(self.device)
+            for test_step, test_data in enumerate(tqdm(self.test_loader, ncols=100)):
+                token_ids = test_data[0].to(self.device)
+                attention_masks = test_data[1].to(self.device)
+                token_type_ids = test_data[2].to(self.device)
+                labels = test_data[3].to(self.device)
+                ids = test_data[4].to(self.device)
                 outputs = model(token_ids, attention_masks, token_type_ids, ids)
                 loss = self.criterion(outputs, labels)
                 # val_loss = val_loss + ((1 / (dev_step + 1))) * (loss.item() - val_loss)
@@ -220,50 +223,53 @@ if __name__ == '__main__':
     # dev_out = preprocess.get_out(processor, './data/test.txt', args, id2label, 'dev')
     # test_out = preprocess.get_out(processor, './data/test.txt', args, id2label, 'test')
 
-    train_out = pickle.load(open(re_final_data_path+'/train.pkl','rb'))
-    dev_out = pickle.load(open(re_final_data_path+'/dev.pkl','rb'))
-    test_out = pickle.load(open(re_final_data_path+'/dev.pkl','rb'))
+    # train_out = pickle.load(open(re_final_data_path+'/train.pkl','rb'))
+    # dev_out = pickle.load(open(re_final_data_path+'/dev.pkl','rb'))
+    # test_out = pickle.load(open(re_final_data_path+'/dev.pkl','rb'))
 
-    train_features, train_callback_info = train_out
-    train_dataset = dataset.ReDataset(train_features)
-    train_sampler = RandomSampler(train_dataset)
-    train_loader = DataLoader(dataset=train_dataset,
-                              batch_size=args.train_batch_size,
-                              sampler=train_sampler,
-                              num_workers=2)
+    # train_features, train_callback_info = train_out
+    # train_dataset = dataset.ReDataset(train_features)
+    # train_sampler = RandomSampler(train_dataset)
+    # train_loader = DataLoader(dataset=train_dataset,
+    #                           batch_size=args.train_batch_size,
+    #                           sampler=train_sampler,
+    #                           num_workers=2)
     
-    dev_features, dev_callback_info = dev_out
-    dev_dataset = dataset.ReDataset(dev_features)
-    dev_loader = DataLoader(dataset=dev_dataset,
-                            batch_size=args.eval_batch_size,
-                            num_workers=2)
+    # dev_features, dev_callback_info = dev_out[:500]
+    # dev_dataset = dataset.ReDataset(dev_features)
+    # dev_loader = DataLoader(dataset=dev_dataset,
+    #                         batch_size=args.eval_batch_size,
+    #                         num_workers=2)
     
-    test_features, test_callback_info = dev_out
-    test_dataset = dataset.ReDataset(test_features)
-    test_loader = DataLoader(dataset=test_dataset,
-                             batch_size=args.eval_batch_size,
-                             num_workers=2)
-    
+    # test_features, test_callback_info = dev_out
+    # test_dataset = dataset.ReDataset(test_features)
+    # test_loader = DataLoader(dataset=test_dataset,
+    #                          batch_size=args.eval_batch_size,
+    #                          num_workers=2)
+    device = torch.device("cpu" if args.gpu_ids[0] == '-1' else "cuda:" + args.gpu_ids[0])
+    tokenizer = BertTokenizer.from_pretrained(args.bert_dir)
+    collate = Collate(max_len=args.max_seq_len, tag2id=label2id, device=device, tokenizer=tokenizer)
+
+    train_dataset = MyDataset(file_path=re_mid_data_path + '/train.txt')
+    train_loader = DataLoader(train_dataset, batch_size=args.train_batch_size, shuffle=True, collate_fn=collate.collate_fn) 
+    dev_dataset = MyDataset(file_path=re_mid_data_path + '/dev.txt')
+    dev_loader = DataLoader(dev_dataset, batch_size=args.eval_batch_size, shuffle=False, collate_fn=collate.collate_fn) 
+    test_loader = dev_loader
     trainer = Trainer(args, train_loader, dev_loader, test_loader)
-    # trainer = Trainer(args, train_loader, None, None)
     # 训练和验证
     # trainer.train()
     
-    # # 测试
-    # logger.info('========进行测试========')
-    # checkpoint_path = './checkpoints/best.pt'
-    # total_loss, test_outputs, test_targets = trainer.test(checkpoint_path)
-    # accuracy, micro_f1, macro_f1 = trainer.get_metrics(test_outputs, test_targets)
-    # logger.info(
-    #     "【test】 loss：{:.6f} accuracy：{:.4f} micro_f1：{:.4f} macro_f1：{:.4f}".format(total_loss, accuracy, micro_f1, macro_f1))
-    # report = trainer.get_classification_report(test_outputs, test_targets, labels)
-    # logger.info(report)
+    # 测试
+    logger.info('========进行测试========')
+    checkpoint_path = './checkpoints/best.pt'
+    total_loss, test_outputs, test_targets = trainer.test(checkpoint_path)
+    accuracy, micro_f1, macro_f1 = trainer.get_metrics(test_outputs, test_targets)
+    logger.info(
+        "【test】 loss：{:.6f} accuracy：{:.4f} micro_f1：{:.4f} macro_f1：{:.4f}".format(total_loss, accuracy, micro_f1, macro_f1))
+    report = trainer.get_classification_report(test_outputs, test_targets, labels)
+    logger.info(report)
 
     # 预测
-    trainer = Trainer(args, None, None, None)
-    checkpoint_path = './checkpoints/best.pt'
-    tokenizer = BertTokenizer.from_pretrained(args.bert_dir)
-
     with open(re_mid_data_path + '/predict.txt', 'r') as fp:
         lines = fp.readlines()
         for line in lines:
@@ -277,9 +283,9 @@ if __name__ == '__main__':
             logger.info("真实标签：" + label)
             logger.info("==========================")
 
-    # 预测单条
-    # text = '丈夫	这件婚事原本与陈$国峻$无关，但陈国峻却“欲求配而无由，夜间乃潜入#天城公主#所居通之	34	39	9	12'
-    text = '1537年，#亨利八世#和他的第三个王后$简·西摩$生了一个男孩：爱德华（后来的爱德华六世）。'
-    ids = [34, 39, 9, 12]
-    print('预测标签：', trainer.predict(tokenizer, text, id2label, args, ids))
-    print('真实标签：', '丈夫')
+    # # 预测单条
+    # # text = '丈夫	这件婚事原本与陈$国峻$无关，但陈国峻却“欲求配而无由，夜间乃潜入#天城公主#所居通之	34	39	9	12'
+    # text = '1537年，#亨利八世#和他的第三个王后$简·西摩$生了一个男孩：爱德华（后来的爱德华六世）。'
+    # ids = [34, 39, 9, 12]
+    # print('预测标签：', trainer.predict(tokenizer, text, id2label, args, ids))
+    # print('真实标签：', '丈夫')
