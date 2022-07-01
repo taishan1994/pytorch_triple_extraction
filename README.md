@@ -31,6 +31,8 @@ data下面的数据：<br>
 命名实体识别基于bert_bilstm_crf，识别出句子中的主体(subject)和客体(object)。相关功能在bert_bilstm_crf_ner下。存储的模型在bert_bilstm_crf_ner/checkpoints/bert_bilsm_crf/model.pt<br>
 关系抽取基于bert，识别出主体和客体之间的关系。相关功能在bert_re下。存储的模型位于bert_re/checkpoints/best.pt<br>
 具体相关的数据位于/data/下面，可以去查看。<br>
+### 温馨提示
+不要在pycharm里面直接运行，在命令行使用带参数运行，即main.py后面的一连串东东。
 
 # 命名实体识别
 在bert_bilstm_crf_ner文件夹下的main.py是主运行程序，可用以下命令运行训练测试和预测：<br>
