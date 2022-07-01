@@ -14,6 +14,7 @@
 我们在预处理的时候会将实体一第一次出现的位置用：'#'+实体名1+'#'代替，将实体二第一次出现的位置用：'$'+实体名2+'$'代替。在经过bert进行编码后，取得#和$表示的嵌入，进行拼接后经过全连接层进行关系分类。<br>
 
 # 文件说明
+```
 --logs：存放日志<br>
 --checkpoints：存放保存的模型<br>
 --data：存放数据<br>
@@ -24,6 +25,7 @@
 --models.py：存放模型代码<br>
 --data_loader.py：数据加载模块<br>
 --main.py：主运行程序，包含训练、验证、测试、预测以及相关评价指标的计算<br>
+```
 要预先下载好预训练的bert模型，放在和该项目同级下的model_hub文件夹下，即：<br>
 model_hub/bert-base-chinese/
 相关下载地址：<a href="https://huggingface.co/bert-base-chinese/tree/main=">bert-base-chinese</a><br>
