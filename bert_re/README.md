@@ -20,8 +20,9 @@
 --utils：存放辅助函数<br>
 --bert_config.py：相关配置<br>
 --dataset.py：制作数据为torch所需的格式<br>
---preprocess.py：数据预处理成bert所需要的格式<br>
+--preprocess.py：数据预处理成bert所需要的格式（暂不使用了）<br>  
 --models.py：存放模型代码<br>
+--data_loader.py：数据加载模块<br>
 --main.py：主运行程序，包含训练、验证、测试、预测以及相关评价指标的计算<br>
 要预先下载好预训练的bert模型，放在和该项目同级下的model_hub文件夹下，即：<br>
 model_hub/bert-base-chinese/
