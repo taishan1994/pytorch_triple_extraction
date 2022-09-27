@@ -267,12 +267,12 @@ if __name__ == '__main__':
     trainer.train()
     
     # 测试
-    # logger.info('========进行测试========')
-    # checkpoint_path = './checkpoints/best.pt'
-    # total_loss, test_outputs, test_targets = trainer.test(checkpoint_path)
-    # accuracy, micro_f1, macro_f1 = trainer.get_metrics(test_outputs, test_targets)
-    # logger.info(
-    #     "【test】 loss：{:.6f} accuracy：{:.4f} micro_f1：{:.4f} macro_f1：{:.4f}".format(total_loss, accuracy, micro_f1, macro_f1))
+    logger.info('========进行测试========')
+    checkpoint_path = './checkpoints/best.pt'
+    total_loss, test_outputs, test_targets = trainer.test(checkpoint_path)
+    accuracy, micro_f1, macro_f1 = trainer.get_metrics(test_outputs, test_targets)
+    logger.info(
+        "【test】 loss：{:.6f} accuracy：{:.4f} micro_f1：{:.4f} macro_f1：{:.4f}".format(total_loss, accuracy, micro_f1, macro_f1))
     # report = trainer.get_classification_report(test_outputs, test_targets, labels)
     # logger.info(report)
 

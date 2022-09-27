@@ -2,8 +2,8 @@ import os
 import json
 import re
 
-re_mid_data_path = './data/re_mid_data'
-mid_data_path = './data/mid_data'
+re_mid_data_path = './data/dgre/re_mid_data'
+mid_data_path = './data/dgre/mid_data'
 train_file = mid_data_path + '/train.json'
 dev_file = mid_data_path + '/dev.json'
 rel_labels_file = re_mid_data_path + '/rels.txt'

@@ -37,7 +37,7 @@
 	----------------evalA.json
 	----------------process.py  # 将数据处理得到mid_data下的train.json和devjson
 	----------------train.json
-	--------re_final_data  # 在bert_re下运行process.py后获得
+	--------re_final_data  # 在bert_re下运行prerocess.py后获得（数据量太大会有问题，后面舍弃了，改用data_loader.py）
 	----------------dev.pkl
 	----------------test.pkl
 	----------------train.pkl
@@ -84,7 +84,7 @@
 	if dataset == "dgre":
 	    args.data_dir = '../data/dgre/'  # 数据集地址
 	    args.max_seq_len = 512  # 文本最大长度
-	    
+	
 	对于一个新的数据集，我们只需要修改dataset为我们data的名字，并新建一个if-else分支，指定数据目录和文本最大长度。
 	最后运行python preprocess.py即可获得ner_final_data下数据。
 	
@@ -92,7 +92,7 @@
 	if data_name == "dgre":
 	    raw_text = "211号汽车故障报告综合情况:故障现象:开暖风鼓风机运转时有异常响声。故障原因简要分析:该故障是鼓风机运转时有异响由此可以判断可能原因：1鼓风机故障 2鼓风机内有杂物"
 	    
-	最后通过以下指令训练，验证，测试和预测：
+	最后通过以下指令训练，验证，测试和预测（输入指令时把后面注释给删掉）：
 	python main.py \
 	--bert_dir="../model_hub/chinese-bert-wwm-ext/" \  # 预训练模型名称
 	--data_dir="../data/dgre/" \
@@ -122,12 +122,12 @@
 	结果：
 	              precision    recall  f1-score   support
 	
-	      object       0.75      0.85      0.80      5363
-	     subject       0.77      0.85      0.81      5114
+	      object       0.67      0.78      0.72      1201
+	     subject       0.68      0.79      0.73      1177
 	
-	   micro avg       0.76      0.85      0.80     10477
-	   macro avg       0.76      0.85      0.80     10477
-	weighted avg       0.76      0.85      0.80     10477
+	   micro avg       0.67      0.78      0.72      2378
+	   macro avg       0.67      0.78      0.72      2378
+	weighted avg       0.67      0.78      0.72      2378
 	
 	211号汽车故障报告综合情况:故障现象:开暖风鼓风机运转时有异常响声。故障原因简要分析:该故障是鼓风机运转时有异响由此可以判断可能原因：1鼓风机故障 2鼓风机内有杂物
 	[('鼓风机', 23, 'subject'), ('有异常响声', 29, 'object'), ('鼓风机', 48, 'subject'), ('异响', 55, 'object'), ('鼓风机', 69, 'subject'), ('故障', 72, 'object'), ('鼓风机', 76, 'subject'), ('有杂物', 80, 'object')]
@@ -152,6 +152,7 @@
 	第一项为关系类别，第二项为文本，注意，我们在主体左右加入#标识，在客体左右加入$标识，最后四项是主客体的起始和结束位置。**注意：这里索引都已经提前+1，因为bert文本前面会加一个[CLS]** 。
 	```python
 	cd bert_re
+	"""以下舍弃了，数据量太大会有问题
 	在preprocess.py里面，修改data_name = "dgre"，并新增一个if-else分支，
 	if data_name == "dgre":
 	    args.max_seq_len = 512
@@ -159,6 +160,7 @@
 	    re_mid_data_path = '../data/dgre/re_mid_data'
 	    
 	最后运行python preprocess.py即可获得re_final_data下的文件。
+	"""
 	
 	在main.py里面，我们需要做的是修改最后预测的那部分，这里要根据自己数据修改：
 	text = '62号汽车故障报告综合情况:故障现象:加速后，丢开油门，#发动机#$熄火$。'
@@ -183,9 +185,12 @@
 	--eval_batch_size=8 \
 	--dropout_prob=0.3 
 	
+	【test】 loss：7.225020 accuracy：0.9893 micro_f1：0.9893 macro_f1：0.8997
+	预测标签： ['部件故障']
+	真实标签： 部件故障
 	```
 
-	**注意：在测试时如果里面不含某类关系的数据，会报错：ValueError: Number of classes, 4, does not match size of target_names, 5. Try specifying the labels parameter**，所以在该数据上要把测试那部分代码注释掉。
+	**注意：在测试时如果里面不含某类关系的数据，会报错：ValueError: Number of classes, 4, does not match size of target_names, 5. Try specifying the labels parameter**，所以在该数据上要把测试报告那部分代码注释掉。
 
 - 实体和关系都训练完，我们会得到bert_bilstm_crf_ner/checkpoints/bert_crf/model.pt和bert_re/checkpoints/best.pt。在pytorch_triple_extraction/get_result.py里面进行融合预测，需要修改：
 	```python
@@ -254,7 +259,7 @@
 	关系： 部件故障
 	```
 
-后话：之前的duie关系抽取没有考虑到数据单独建一个文件夹，可酌情修改。
+后话：之前的duie关系抽取没有考虑到数据单独建一个文件夹，可酌情修改，主要是一些路径问题。而对于上述数据集而言，也可以增加一些约束，比如：**客体要约束在主体之后，而不能在主体之前**。延伸到方面级的情感分析也是一样的。
 
 ****
 

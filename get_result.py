@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def get_ner_result(raw_text):
   # 命名实体识别相关
-  model_name = 'bert_bilstm_crf'
+  model_name = 'bert_crf'
   ner_args = ner_config.Args().get_parser()
   ner_args.bert_dir = './model_hub/chinese-roberta-wwm-ext/'
   ner_args.gpu_ids = "-1"
@@ -26,7 +26,7 @@ def get_ner_result(raw_text):
   ner_args.lstm_hidden = 128
   nerlabel2id = {}
   id2nerlabel = {}
-  with open('./data/mid_data/ner_labels.txt','r') as fp:
+  with open('./data/dgre/mid_data/ner_labels.txt','r') as fp:
       ner_labels = fp.read().strip().split('\n')
   for i,j in enumerate(ner_labels):
     nerlabel2id[j] = i
@@ -60,7 +60,7 @@ def get_re_result(entities, raw_text):
   process_data = transforme_re_data(subjects, objects, raw_text)
   label2id = {}
   id2label = {}
-  with open('./data/re_mid_data/rels.txt','r') as fp:
+  with open('./data/dgre/re_mid_data/rels.txt','r') as fp:
       labels = fp.read().strip().split('\n')
   for i,j in enumerate(labels):
       label2id[j] = i
@@ -115,6 +115,11 @@ if __name__ == '__main__':
     '明早起飞》是由明太鱼作词，满江作曲，戴娆演唱的一首歌曲',
     '古董相机收藏与鉴赏》是由高继生、高峻岭编著，浙江科学技术出版社出版的一本书籍',
     '谢顺光，男，祖籍江西都昌，出生于景德镇陶瓷世家',
+  ]
+
+  raw_texts = [
+    '故障现象：转向时有“咯噔”声原因分析：转向机与转向轴处缺油解决措施：向此处重新覆盖一层润滑脂后，故障消失',
+    '1045号汽车故障报告故障现象打开点火开关，操作左前电动座椅开关，座椅6个方向均不动作故障原因六向电动座椅线束磨破搭铁修复方法包扎磨破线束，从新固定。',
   ]
   for raw_text in raw_texts:
     entities = get_ner_result(raw_text)
