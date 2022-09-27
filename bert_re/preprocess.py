@@ -121,6 +121,15 @@ def convert_examples_to_features(examples, max_seq_len, bert_dir, label2id):
     logger.info(f'Convert {len(examples)} examples to features')
 
     for i, example in enumerate(examples):
+        ids = example.ids
+        flag = False
+        for x in ids:
+            if x > max_seq_len - 1:
+                longer_count += 1
+                flag = True
+                break
+        if flag:
+            continue
         feature, tmp_callback = convert_bert_example(
             ex_idx=i,
             example=example,
@@ -134,7 +143,7 @@ def convert_examples_to_features(examples, max_seq_len, bert_dir, label2id):
         features.append(feature)
         callback_info.append(tmp_callback)
     logger.info(f'Build {len(features)} features')
-
+    logger.info(f"超出最大长度的有：{longer_count}")
     out = (features,)
 
     if not len(callback_info):
@@ -168,13 +177,22 @@ def get_out(processor, txt_path, args, id2label, label2id, mode):
 
 
 if __name__ == '__main__':
+    data_name = "dgre"
+
     args = bert_config.Args().get_parser()
     args.log_dir = './logs/'
-    args.max_seq_len = 300
     args.bert_dir = '../model_hub/chinese-roberta-wwm-ext/'
     utils.set_logger(os.path.join(args.log_dir, 'preprocess.log'))
     logger.info(vars(args))
-    re_mid_data_path = '../data/re_mid_data'
+
+    if data_name == "dgre":
+        args.max_seq_len = 512
+        args.data_dir = '../data/dgre/'
+        re_mid_data_path = '../data/dgre/re_mid_data'
+
+    elif data_name == "duie":
+        args.max_seq_len = 300
+        re_mid_data_path = '../data/re_mid_data'
 
     processor = Processor()
 

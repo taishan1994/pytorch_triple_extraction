@@ -13,6 +13,253 @@
 - 一种基于机器阅读理解的命名实体识别：https://github.com/taishan1994/BERT_MRC_NER_chinese
 - W2NER：命名实体识别最新sota：https://github.com/taishan1994/W2NER_predict
 ****
+**2022-09-26：保姆级教程来了！！！**
+
+这里以[工业知识图谱关系抽取-高端装备制造知识图谱自动化构建 竞赛 - DataFountain](https://www.datafountain.cn/competitions/584)为例，一步一步的进行。
+
+- 拷贝项目：```git clone https://github.com/taishan1994/pytorch_triple_extraction.git ```。
+
+- 下载预训练模型[chinese-roberta-wwm-ext]([hfl/chinese-roberta-wwm-ext at main (huggingface.co)](https://huggingface.co/hfl/chinese-roberta-wwm-ext/tree/main))到model_hub/chinese-roberta-wwm-ext/下，需要的是config.json、pytorch_model.bin和vocab.txt，当然也可以去下载[chinese-bert-wwm-ext]([hfl/chinese-bert-wwm-ext at main (huggingface.co)](https://huggingface.co/hfl/chinese-bert-wwm-ext/tree/main))到model_hub/chinese-bert-wwm-ext/下。
+
+- 在data下新建一个数据集文件夹，针对该数据集是dgre，在dgre下新建好相应的一些文件夹，目录如下（文件夹内具体文件稍后再按步骤生成）：
+	```python
+	data
+	----dgre
+	--------mid_data  # 运行raw_data下的process.py后得到
+	----------------dev.json
+	----------------ent_labels.txt  # 实体名，这里就两种：subject和object
+	----------------ner_labels.txt  # 字符标签，BIO格式，共五种。
+	----------------train.json
+	--------ner_final_data  # 在 bert_bilstm_crf_ner下运行preprocess.py后获得
+	----------------dev.pkl  
+	----------------train.pkl
+	--------raw_data  # 原始数据
+	----------------evalA.json
+	----------------process.py  # 将数据处理得到mid_data下的train.json和devjson
+	----------------train.json
+	--------re_final_data  # 在bert_re下运行process.py后获得
+	----------------dev.pkl
+	----------------test.pkl
+	----------------train.pkl
+	--------re_mid_data  # 运行re_process.py后获得
+	----------------dev.txt
+	----------------rels.txt  # 关系类别
+	----------------train.txt
+	--------dgre_512_cut.txt  # 实体识别处理后可视化结果
+	```
+
+	raw_data文件夹用于存储原始的数据。该竞赛原始数据由两部分组成，evalA.json（只有文本，没有标签）和train.json（训练数据），train.json里面每一行是一个字典，我们看看单条数据：
+
+	```python
+	{"ID": "AT0001", "text": "62号汽车故障报告综合情况:故障现象:加速后，丢开油门，发动机熄火。", "spo_list": [{"h": {"name": "发动机", "pos": [28, 31]}, "t": {"name": "熄火", "pos": [31, 33]}, "relation": "部件故障"}]}
+	```
+
+	"h"表示关系主体，"t"表示关系客体，"relation"表示关系。在raw_data下新建一个process.py，该文件主要是将数据处理成之后我们需要的格式，在mid_data下这里看看处理完之后的数据是什么样子（由于只有train.json，因此我们需要对数据划分为训练集和验证集）：
+
+	```python
+	[{"id": "AT0001", "text": "62号汽车故障报告综合情况:故障现象:加速后，丢开油门，发动机熄火。", "subject_labels": [["T0", "发动机", 28, 31, "部件故障"]], "object_labels": [["T0", "熄火", 31, 33, "部件故障"]]}, ...] 
+	```
+
+	需要注意两个地方，每一个实体列表5项分别表示：[ID标识，实体，实体起始位置，实体结束位置，关系]，subject_labels表示主体实体，object_labels表示客体实体，主体实体和客体实体之间通过ID标识连接。ent_labels.txt和ner_labels.txt自己新建然后输入以下信息就行：
+
+	```python
+	ent_labels.txt里：
+	subject
+	object
+	
+	ner_labels.txt里：
+	O
+	B-object
+	I-object
+	B-subject
+	I-subject
+	```
+
+- 接下来我们解可以进行实体识别提取主体和客体了：
+	```python
+	cd bert_bilstm_crf_ner
+	在preprocess.py里面我们需要修改以下一些地方：
+	dataset = "dgre"
+	
+	if dataset == "dgre":
+	    args.data_dir = '../data/dgre/'  # 数据集地址
+	    args.max_seq_len = 512  # 文本最大长度
+	    
+	对于一个新的数据集，我们只需要修改dataset为我们data的名字，并新建一个if-else分支，指定数据目录和文本最大长度。
+	最后运行python preprocess.py即可获得ner_final_data下数据。
+	
+	接着在main.py里面修改data_name为"dgre"，新建一个if-else分支用于输入预测文本：
+	if data_name == "dgre":
+	    raw_text = "211号汽车故障报告综合情况:故障现象:开暖风鼓风机运转时有异常响声。故障原因简要分析:该故障是鼓风机运转时有异响由此可以判断可能原因：1鼓风机故障 2鼓风机内有杂物"
+	    
+	最后通过以下指令训练，验证，测试和预测：
+	python main.py \
+	--bert_dir="../model_hub/chinese-bert-wwm-ext/" \  # 预训练模型名称
+	--data_dir="../data/dgre/" \
+	--log_dir="./logs/" \
+	--output_dir="./checkpoints/" \
+	--num_tags=5 \
+	--seed=123 \
+	--gpu_ids="0" \
+	--max_seq_len=512 \  # 和preprocess.py里面的一致
+	--lr=3e-5 \
+	--crf_lr=3e-2 \
+	--other_lr=3e-4 \
+	--train_batch_size=8 \
+	--train_epochs=5 \
+	--eval_batch_size=8 \
+	--max_grad_norm=1 \
+	--warmup_proportion=0.1 \
+	--adam_epsilon=1e-8 \
+	--weight_decay=0.01 \
+	--lstm_hidden=128 \
+	--num_layers=1 \
+	--use_lstm='False' \
+	--use_crf='True' \
+	--dropout_prob=0.3 \
+	--dropout=0.3 
+	
+	结果：
+	              precision    recall  f1-score   support
+	
+	      object       0.75      0.85      0.80      5363
+	     subject       0.77      0.85      0.81      5114
+	
+	   micro avg       0.76      0.85      0.80     10477
+	   macro avg       0.76      0.85      0.80     10477
+	weighted avg       0.76      0.85      0.80     10477
+	
+	211号汽车故障报告综合情况:故障现象:开暖风鼓风机运转时有异常响声。故障原因简要分析:该故障是鼓风机运转时有异响由此可以判断可能原因：1鼓风机故障 2鼓风机内有杂物
+	[('鼓风机', 23, 'subject'), ('有异常响声', 29, 'object'), ('鼓风机', 48, 'subject'), ('异响', 55, 'object'), ('鼓风机', 69, 'subject'), ('故障', 72, 'object'), ('鼓风机', 76, 'subject'), ('有杂物', 80, 'object')]
+	```
+
+- 接着我们可以着手关系抽取了，在re_mid_data下新建一个rels.txt，里面输入该数据集的关系，这里是：
+
+	```python
+	部件故障
+	性能故障
+	检测工具
+	组成
+	未知
+	```
+
+	我们新增了一项未知项，以解决主体和客体之间不存在关系的情况。在pytorch_triple_extraction/re_process.py里面修改路径为该数据集的路径，然后运行```python re_process.py```即可获得re_mid_data下的其它文件，看看里面数据：
+
+	```python
+	部件故障	故障现象：该车最多只能跑到120KM/H,再踩#油门#就$不起作用$了;	24	27	29	34
+	```
+
+	第一项为关系类别，第二项为文本，注意，我们在主体左右加入#标识，在客体左右加入$标识，最后四项是主客体的起始和结束位置。**注意：这里索引都已经提前+1，因为bert文本前面会加一个[CLS]** 。
+	```python
+	cd bert_re
+	在preprocess.py里面，修改data_name = "dgre"，并新增一个if-else分支，
+	if data_name == "dgre":
+	    args.max_seq_len = 512
+	    args.data_dir = '../data/dgre/'
+	    re_mid_data_path = '../data/dgre/re_mid_data'
+	    
+	最后运行python preprocess.py即可获得re_final_data下的文件。
+	
+	在main.py里面，我们需要做的是修改最后预测的那部分，这里要根据自己数据修改：
+	text = '62号汽车故障报告综合情况:故障现象:加速后，丢开油门，#发动机#$熄火$。'
+	ids = [29,	33,	34,	37]
+	print('预测标签：', trainer.predict(tokenizer, text, id2label, args, ids))
+	print('真实标签：', '部件故障')
+	
+	最后运行以下指令进行训练、验证、测试和预测：
+	python main.py \
+	--bert_dir="../model_hub/chinese-bert-wwm-ext/" \
+	--data_dir="../data/dgre/" \
+	--log_dir="./logs/" \
+	--output_dir="./checkpoints/" \
+	--num_tags=5 \  # 根据rels.txt里面数目而定
+	--seed=123 \
+	--gpu_ids="0" \
+	--max_seq_len=512 \
+	--lr=3e-5 \
+	--other_lr=3e-4 \
+	--train_batch_size=8 \
+	--train_epochs=1 \
+	--eval_batch_size=8 \
+	--dropout_prob=0.3 
+	
+	```
+
+	**注意：在测试时如果里面不含某类关系的数据，会报错：ValueError: Number of classes, 4, does not match size of target_names, 5. Try specifying the labels parameter**，所以在该数据上要把测试那部分代码注释掉。
+
+- 实体和关系都训练完，我们会得到bert_bilstm_crf_ner/checkpoints/bert_crf/model.pt和bert_re/checkpoints/best.pt。在pytorch_triple_extraction/get_result.py里面进行融合预测，需要修改：
+	```python
+	model_name = 'bert_crf'  # 这些参数和之前的对应
+	ner_args.use_lstm = 'False'
+	ner_args.use_crf = 'True'
+	ner_args.num_tags = 5
+	ner_args.max_seq_len = 512
+	
+	re_args.num_tags = 5
+	re_args.max_seq_len = 512
+	    
+	并最后修改预测的文本：
+	 raw_texts = [
+	    '故障现象：转向时有“咯噔”声原因分析：转向机与转向轴处缺油解决措施：向此处重新覆盖一层润滑脂后，故障消失',
+	    '1045号汽车故障报告故障现象打开点火开关，操作左前电动座椅开关，座椅6个方向均不动作故障原因六向电动座椅线束磨破搭铁修复方法包扎磨破线束，从新固定。',
+	]
+	    
+	结果：
+	('转向', 5, 'subject')
+	('转向机', 19, 'subject')
+	('转向轴', 23, 'subject')
+	('缺油', 27, 'object')
+	[('转向', 5, 7), ('转向机', 19, 22), ('转向轴', 23, 26)]
+	[('缺油', 27, 29)]
+	==========================
+	故障现象：转向时有“咯噔”声原因分析：转向机与转向轴处缺油解决措施：向此处重新覆盖一层润滑脂后，故障消失
+	主体： ('转向', 5, 7)
+	客体： ('缺油', 27, 29)
+	关系： 部件故障
+	==========================
+	故障现象：转向时有“咯噔”声原因分析：转向机与转向轴处缺油解决措施：向此处重新覆盖一层润滑脂后，故障消失
+	主体： ('转向机', 19, 22)
+	客体： ('缺油', 27, 29)
+	关系： 部件故障
+	==========================
+	故障现象：转向时有“咯噔”声原因分析：转向机与转向轴处缺油解决措施：向此处重新覆盖一层润滑脂后，故障消失
+	主体： ('转向轴', 23, 26)
+	客体： ('缺油', 27, 29)
+	关系： 部件故障
+	('座椅', 33, 'subject')
+	('不动作', 40, 'object')
+	('六向电动座椅线束', 47, 'subject')
+	('磨破', 55, 'object')
+	[('座椅', 33, 35), ('六向电动座椅线束', 47, 55)]
+	[('不动作', 40, 43), ('磨破', 55, 57)]
+	==========================
+	1045号汽车故障报告故障现象打开点火开关，操作左前电动座椅开关，座椅6个方向均不动作故障原因六向电动座椅线束磨破搭铁修复方法包扎磨破线束，从新固定。
+	主体： ('座椅', 33, 35)
+	客体： ('不动作', 40, 43)
+	关系： 部件故障
+	==========================
+	1045号汽车故障报告故障现象打开点火开关，操作左前电动座椅开关，座椅6个方向均不动作故障原因六向电动座椅线束磨破搭铁修复方法包扎磨破线束，从新固定。
+	主体： ('座椅', 33, 35)
+	客体： ('磨破', 55, 57)
+	关系： 部件故障
+	==========================
+	1045号汽车故障报告故障现象打开点火开关，操作左前电动座椅开关，座椅6个方向均不动作故障原因六向电动座椅线束磨破搭铁修复方法包扎磨破线束，从新固定。
+	主体： ('六向电动座椅线束', 47, 55)
+	客体： ('不动作', 40, 43)
+	关系： 部件故障
+	==========================
+	1045号汽车故障报告故障现象打开点火开关，操作左前电动座椅开关，座椅6个方向均不动作故障原因六向电动座椅线束磨破搭铁修复方法包扎磨破线束，从新固定。
+	主体： ('六向电动座椅线束', 47, 55)
+	客体： ('磨破', 55, 57)
+	关系： 部件故障
+	```
+
+后话：之前的duie关系抽取没有考虑到数据单独建一个文件夹，可酌情修改。
+
+****
+
+# 最初的介绍
+
 基于pytorch的中文三元组提取（命名实体识别+关系抽取）<br>
 预训练模型为<a href='https://huggingface.co/hfl/chinese-roberta-wwm-ext'>chinese-roberta-wwm-ext</a><br>
 训练好的命名实体识别模型：<br>

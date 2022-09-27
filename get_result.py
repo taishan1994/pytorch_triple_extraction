@@ -18,10 +18,10 @@ def get_ner_result(raw_text):
   ner_args = ner_config.Args().get_parser()
   ner_args.bert_dir = './model_hub/chinese-roberta-wwm-ext/'
   ner_args.gpu_ids = "-1"
-  ner_args.use_lstm = 'True'
+  ner_args.use_lstm = 'False'
   ner_args.use_crf = 'True'
   ner_args.num_tags = 5
-  ner_args.max_seq_len = 300
+  ner_args.max_seq_len = 512
   ner_args.num_layers = 1
   ner_args.lstm_hidden = 128
   nerlabel2id = {}
@@ -52,8 +52,8 @@ def get_re_result(entities, raw_text):
   re_args = re_config.Args().get_parser()
   re_args.bert_dir = './model_hub/chinese-roberta-wwm-ext/'
   re_args.gpu_ids = "-1"
-  re_args.num_tags = 49
-  re_args.max_seq_len = 300
+  re_args.num_tags = 5
+  re_args.max_seq_len = 512
   trainer = re_main.Trainer(re_args, None, None, None)
   re_args.output_dir = './bert_re/checkpoints/'
   tokenizer = BertTokenizer.from_pretrained(re_args.bert_dir)

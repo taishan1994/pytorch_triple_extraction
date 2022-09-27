@@ -186,7 +186,7 @@ class BertForNer:
 
 
 if __name__ == '__main__':
-    data_name = 'duie'
+    data_name = 'dgre'
     # args.train_epochs = 1
     # args.train_batch_size = 32
     # args.max_seq_len = 300
@@ -200,58 +200,59 @@ if __name__ == '__main__':
     if args.use_lstm == 'False' and args.use_crf == 'False':
         model_name = 'bert'
     commonUtils.set_logger(os.path.join(args.log_dir, '{}.log'.format(model_name)))
-    if data_name == "duie":
-        args.data_dir = '../data/'
-        data_path = os.path.join(args.data_dir, 'ner_final_data')
-        mid_data_path = os.path.join(args.data_dir, 'mid_data')
-        # 真实标签
-        ent_labels_path = mid_data_path + '/ent_labels.txt'
-        # 序列标注标签B I O
-        ner_labels_path = mid_data_path + '/ner_labels.txt'
-        with open(ent_labels_path, 'r') as fp:
-            ent_labels = fp.read().strip().split('\n')
-        entlabel2id = {}
-        id2entlabel = {}
-        for i,j in enumerate(ent_labels):
-          entlabel2id[j] = i
-          id2entlabel[i] = j
-        nerlabel2id = {}
-        id2nerlabel = {}
-        with open(ner_labels_path,'r') as fp:
-            ner_labels = fp.read().strip().split('\n')
-        for i,j in enumerate(ner_labels):
-          nerlabel2id[j] = i
-          id2nerlabel[i] = j
-        logger.info(id2nerlabel)
-        args.num_tags = len(ner_labels)
-        logger.info(args)
 
-        train_features, train_callback_info = commonUtils.read_pkl(data_path, 'train')
-        train_dataset = dataset.NerDataset(train_features)
-        train_sampler = RandomSampler(train_dataset)
-        train_loader = DataLoader(dataset=train_dataset,
-                                  batch_size=args.train_batch_size,
-                                  sampler=train_sampler,
-                                  num_workers=2)
-        dev_features, dev_callback_info = commonUtils.read_pkl(data_path, 'dev')
-        dev_dataset = dataset.NerDataset(dev_features)
-        dev_loader = DataLoader(dataset=dev_dataset,
-                                batch_size=args.eval_batch_size,
-                                num_workers=2)
-        # test_features, test_callback_info = commonUtils.read_pkl(data_path, 'test')
-        # test_dataset = dataset.NerDataset(test_features)
-        # test_loader = DataLoader(dataset=test_dataset,
-        #                         batch_size=args.eval_batch_size,
-        #                         num_workers=2)
-        bertForNer = BertForNer(args, train_loader, dev_loader, dev_loader, id2nerlabel)
-        # bertForNer.train()
 
-        model_path = './checkpoints/{}/model.pt'.format(model_name)
-        # bertForNer.test(model_path)
-        
+    data_path = os.path.join(args.data_dir, 'ner_final_data')
+    mid_data_path = os.path.join(args.data_dir, 'mid_data')
+    # 真实标签
+    ent_labels_path = mid_data_path + '/ent_labels.txt'
+    # 序列标注标签B I O
+    ner_labels_path = mid_data_path + '/ner_labels.txt'
+    with open(ent_labels_path, 'r') as fp:
+        ent_labels = fp.read().strip().split('\n')
+    entlabel2id = {}
+    id2entlabel = {}
+    for i,j in enumerate(ent_labels):
+      entlabel2id[j] = i
+      id2entlabel[i] = j
+    nerlabel2id = {}
+    id2nerlabel = {}
+    with open(ner_labels_path,'r') as fp:
+        ner_labels = fp.read().strip().split('\n')
+    for i,j in enumerate(ner_labels):
+      nerlabel2id[j] = i
+      id2nerlabel[i] = j
+    logger.info(id2nerlabel)
+    args.num_tags = len(ner_labels)
+    logger.info(args)
+
+    train_features, train_callback_info = commonUtils.read_pkl(data_path, 'train')
+    train_dataset = dataset.NerDataset(train_features)
+    train_sampler = RandomSampler(train_dataset)
+    train_loader = DataLoader(dataset=train_dataset,
+                              batch_size=args.train_batch_size,
+                              sampler=train_sampler,
+                              num_workers=2)
+    dev_features, dev_callback_info = commonUtils.read_pkl(data_path, 'dev')
+    dev_dataset = dataset.NerDataset(dev_features)
+    dev_loader = DataLoader(dataset=dev_dataset,
+                            batch_size=args.eval_batch_size,
+                            num_workers=2)
+    # test_features, test_callback_info = commonUtils.read_pkl(data_path, 'test')
+    # test_dataset = dataset.NerDataset(test_features)
+    # test_loader = DataLoader(dataset=test_dataset,
+    #                         batch_size=args.eval_batch_size,
+    #                         num_workers=2)
+    bertForNer = BertForNer(args, train_loader, dev_loader, dev_loader, id2nerlabel)
+    bertForNer.train()
+
+    model_path = './checkpoints/{}/model.pt'.format(model_name)
+    bertForNer.test(model_path)
+
+    if data_name == "dgre":
+        raw_text = "211号汽车故障报告综合情况:故障现象:开暖风鼓风机运转时有异常响声。故障原因简要分析:该故障是鼓风机运转时有异响由此可以判断可能原因：1鼓风机故障 2鼓风机内有杂物"
+    elif data_name == "duie":
         raw_text = "《单身》是Outsider演唱的歌曲，收录于专辑《2辑Maestro》。描写一个人单身的感觉，单身即是痛苦的也是幸福的，在于人们如何去看待s"
-        logger.info(raw_text)
-        bertForNer.predict(raw_text, model_path)
-        raw_text = "歌曲《墨写你的美》是由歌手冷漠演唱的一首歌曲"
-        logger.info(raw_text)
-        bertForNer.predict(raw_text, model_path)
+
+    logger.info(raw_text)
+    bertForNer.predict(raw_text, model_path)

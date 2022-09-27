@@ -103,13 +103,18 @@ class Trainer:
                         checkpoint_path = os.path.join(self.args.output_dir, 'best.pt')
                         self.save_ckp(checkpoint, checkpoint_path)
                 """
-                if global_step == 4000:
-                  checkpoint_path = os.path.join(self.args.output_dir, 'best.pt') 
-                  checkpoint = {
-                    'state_dict': self.model.state_dict(),
-                  }
-                  self.save_ckp(checkpoint, checkpoint_path)
-                  break      
+                # if global_step == 4000:
+                #   checkpoint_path = os.path.join(self.args.output_dir, 'best.pt')
+                #   checkpoint = {
+                #     'state_dict': self.model.state_dict(),
+                #   }
+                #   self.save_ckp(checkpoint, checkpoint_path)
+                #   break
+        checkpoint_path = os.path.join(self.args.output_dir, 'best.pt')
+        checkpoint = {
+            'state_dict': self.model.state_dict(),
+        }
+        self.save_ckp(checkpoint, checkpoint_path)
 
     def dev(self):
         self.model.eval()
@@ -246,6 +251,7 @@ if __name__ == '__main__':
     # test_loader = DataLoader(dataset=test_dataset,
     #                          batch_size=args.eval_batch_size,
     #                          num_workers=2)
+
     device = torch.device("cpu" if args.gpu_ids[0] == '-1' else "cuda:" + args.gpu_ids[0])
     tokenizer = BertTokenizer.from_pretrained(args.bert_dir)
     collate = Collate(max_len=args.max_seq_len, tag2id=label2id, device=device, tokenizer=tokenizer)
@@ -256,32 +262,33 @@ if __name__ == '__main__':
     dev_loader = DataLoader(dev_dataset, batch_size=args.eval_batch_size, shuffle=False, collate_fn=collate.collate_fn) 
     test_loader = dev_loader
     trainer = Trainer(args, train_loader, dev_loader, test_loader)
+
     # 训练和验证
-    # trainer.train()
+    trainer.train()
     
     # 测试
-    logger.info('========进行测试========')
-    checkpoint_path = './checkpoints/best.pt'
-    total_loss, test_outputs, test_targets = trainer.test(checkpoint_path)
-    accuracy, micro_f1, macro_f1 = trainer.get_metrics(test_outputs, test_targets)
-    logger.info(
-        "【test】 loss：{:.6f} accuracy：{:.4f} micro_f1：{:.4f} macro_f1：{:.4f}".format(total_loss, accuracy, micro_f1, macro_f1))
-    report = trainer.get_classification_report(test_outputs, test_targets, labels)
-    logger.info(report)
+    # logger.info('========进行测试========')
+    # checkpoint_path = './checkpoints/best.pt'
+    # total_loss, test_outputs, test_targets = trainer.test(checkpoint_path)
+    # accuracy, micro_f1, macro_f1 = trainer.get_metrics(test_outputs, test_targets)
+    # logger.info(
+    #     "【test】 loss：{:.6f} accuracy：{:.4f} micro_f1：{:.4f} macro_f1：{:.4f}".format(total_loss, accuracy, micro_f1, macro_f1))
+    # report = trainer.get_classification_report(test_outputs, test_targets, labels)
+    # logger.info(report)
 
     # 预测
-    with open(re_mid_data_path + '/predict.txt', 'r') as fp:
-        lines = fp.readlines()
-        for line in lines:
-            line = line.strip().split('\t')
-            label = line[0]
-            text = line[1]
-            ids = [int(line[2]),int(line[3]),int(line[4]),int(line[5])]
-            logger.info(text)
-            result = trainer.predict(tokenizer, text, id2label, args, ids)
-            logger.info("预测标签：" + "".join(result))
-            logger.info("真实标签：" + label)
-            logger.info("==========================")
+    # with open(re_mid_data_path + '/predict.txt', 'r') as fp:
+    #     lines = fp.readlines()
+    #     for line in lines:
+    #         line = line.strip().split('\t')
+    #         label = line[0]
+    #         text = line[1]
+    #         ids = [int(line[2]),int(line[3]),int(line[4]),int(line[5])]
+    #         logger.info(text)
+    #         result = trainer.predict(tokenizer, text, id2label, args, ids)
+    #         logger.info("预测标签：" + "".join(result))
+    #         logger.info("真实标签：" + label)
+    #         logger.info("==========================")
 
     # # 预测单条
     # # text = '丈夫	这件婚事原本与陈$国峻$无关，但陈国峻却“欲求配而无由，夜间乃潜入#天城公主#所居通之	34	39	9	12'
@@ -289,3 +296,8 @@ if __name__ == '__main__':
     # ids = [34, 39, 9, 12]
     # print('预测标签：', trainer.predict(tokenizer, text, id2label, args, ids))
     # print('真实标签：', '丈夫')
+
+    text = '62号汽车故障报告综合情况:故障现象:加速后，丢开油门，#发动机#$熄火$。'
+    ids = [29, 33, 34, 37]
+    print('预测标签：', trainer.predict(tokenizer, text, id2label, args, ids))
+    print('真实标签：', '部件故障')

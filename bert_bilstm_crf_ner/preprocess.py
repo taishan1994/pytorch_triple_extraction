@@ -236,37 +236,41 @@ def save_file(filename, data, id2nerlabel):
 
 if __name__ == '__main__':
 
-    dataset = "duie"
+    dataset = "dgre"
     args = config.Args().get_parser()
     args.bert_dir = '../model_hub/chinese-roberta-wwm-ext/'
     commonUtils.set_logger(os.path.join(args.log_dir, 'preprocess.log'))
 
-    if dataset == "duie":
+    if dataset == "dgre":
+        args.data_dir = '../data/dgre/'
+        args.max_seq_len = 512
+    elif dataset == "duie":
         args.data_dir = '../data/'
         args.max_seq_len = 300
-        mid_data_path = os.path.join(args.data_dir, 'mid_data')
-        
-        # 真实标签
-        ent_labels_path = mid_data_path + '/ent_labels.txt'
-        # 序列标注标签B I O
-        ner_labels_path = mid_data_path + '/ner_labels.txt'
-        with open(ent_labels_path, 'r') as fp:
-            ent_labels = fp.read().strip().split('\n')
-        entlabel2id = {}
-        id2entlabel = {}
-        for i,j in enumerate(ent_labels):
-          entlabel2id[j] = i
-          id2entlabel[i] = j
-        nerlabel2id = {}
-        id2nerlabel = {}
-        with open(ner_labels_path,'r') as fp:
-            ner_labels = fp.read().strip().split('\n')
-        for i,j in enumerate(ner_labels):
-          nerlabel2id[j] = i
-          id2nerlabel[i] = j
 
-        processor = NerProcessor(cut_sent=False, cut_sent_len=args.max_seq_len)
+    mid_data_path = os.path.join(args.data_dir, 'mid_data')
 
-        train_data = get_data(processor, mid_data_path, "train.json", "train", nerlabel2id, ent_labels, args)
-        save_file(os.path.join(args.data_dir,"{}_{}_cut.txt".format(dataset, args.max_seq_len)), train_data, id2nerlabel)
-        dev_data = get_data(processor, mid_data_path, "dev.json", "dev", nerlabel2id, ent_labels, args)
+    # 真实标签
+    ent_labels_path = mid_data_path + '/ent_labels.txt'
+    # 序列标注标签B I O
+    ner_labels_path = mid_data_path + '/ner_labels.txt'
+    with open(ent_labels_path, 'r') as fp:
+        ent_labels = fp.read().strip().split('\n')
+    entlabel2id = {}
+    id2entlabel = {}
+    for i,j in enumerate(ent_labels):
+      entlabel2id[j] = i
+      id2entlabel[i] = j
+    nerlabel2id = {}
+    id2nerlabel = {}
+    with open(ner_labels_path,'r') as fp:
+        ner_labels = fp.read().strip().split('\n')
+    for i,j in enumerate(ner_labels):
+      nerlabel2id[j] = i
+      id2nerlabel[i] = j
+
+    processor = NerProcessor(cut_sent=False, cut_sent_len=args.max_seq_len)
+
+    train_data = get_data(processor, mid_data_path, "train.json", "train", nerlabel2id, ent_labels, args)
+    save_file(os.path.join(args.data_dir,"{}_{}_cut.txt".format(dataset, args.max_seq_len)), train_data, id2nerlabel)
+    dev_data = get_data(processor, mid_data_path, "dev.json", "dev", nerlabel2id, ent_labels, args)
