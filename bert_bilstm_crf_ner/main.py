@@ -176,7 +176,7 @@ class BertForNer:
             logits = model(token_ids.to(device), attention_masks.to(device), token_type_ids.to(device), None)
             if self.args.use_crf != "True":
               logits = logits.detach().cpu().numpy()
-              logits = np.argmax(output, axis=2)
+              logits = np.argmax(logits, axis=2)
             pred_label = [list(map(lambda x:self.idx2tag[x], i)) for i in logits]
             assert len(pred_label[0]) == len(tokens)+2
             pred_entities = decodeUtils.get_entities(pred_label[0][1:1+len(tokens)], "".join(tokens))
