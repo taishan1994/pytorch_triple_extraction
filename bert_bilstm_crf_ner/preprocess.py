@@ -191,6 +191,18 @@ def convert_examples_to_features(examples, max_seq_len, bert_dir, nerlabel2id, e
     logger.info(f'Convert {len(examples)} examples to features')
 
     for i, example in enumerate(examples):
+        subject_entities = example.subject_labels
+        object_entities = example.object_labels
+        entities = subject_entities + object_entities
+        flag = False
+        for ent in entities:
+            start_id = ent[1]
+            end_id = len(ent[0]) + ent[1]
+            if start_id >= max_seq_len - 2 or end_id >= max_seq_len - 2:
+                flag = True
+                break
+        if flag:
+            continue
         feature, tmp_callback = convert_bert_example(
             ex_idx=i,
             example=example,
