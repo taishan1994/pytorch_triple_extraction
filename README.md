@@ -412,10 +412,10 @@ weighted avg       0.89      0.88      0.88     52973
 
 # 融合预测
 在得到了各自的模型之后，在get_result.py中可以进行三元组抽取了：
-```
+```python
 python get_result.py
 ```
-```
+```python
 ('明早起飞', 0, 'subject')
 ('明太鱼', 7, 'object')
 ('满江', 13, 'object')
