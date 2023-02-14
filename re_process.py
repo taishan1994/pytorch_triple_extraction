@@ -66,8 +66,8 @@ def get_raw_data(output_file, input_file):
             output_file.write(sub[4] + '\t' + text + '\t' + str(sub_re_start) + '\t' +
               str(sub_re_end) + '\t' + str(obj_re_start) + '\t' + str(obj_re_end) + '\n')
           else:
-            output_file.write('未知' + ' ' + text + ' ' + str(sub_re_start) + ' ' +
-              str(sub_re_end) + ' ' + str(obj_re_start) + ' ' + str(obj_re_end) + '\n')
+            output_file.write('未知' + '\t' + text + '\t' + str(sub_re_start) + '\t' +
+              str(sub_re_end) + '\t' + str(obj_re_start) + '\t' + str(obj_re_end) + '\n')
           # 恢复text
           text = tmp_text
       j+=1
