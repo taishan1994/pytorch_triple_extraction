@@ -114,8 +114,8 @@
 	--weight_decay=0.01 \
 	--lstm_hidden=128 \
 	--num_layers=1 \
-	--use_lstm='False' \
-	--use_crf='True' \
+	--use_lstm="False" \
+	--use_crf="True" \
 	--dropout_prob=0.3 \
 	--dropout=0.3 
 	
