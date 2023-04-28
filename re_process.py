@@ -20,6 +20,7 @@ with open(rel_labels_file,'r') as fp:
     rellabel2id[rlabel] = i
 print(rellabel2id)
 
+
 def get_raw_data(output_file, input_file):
   with open(input_file,'r') as fp:
     data = json.loads(fp.read())
@@ -37,6 +38,10 @@ def get_raw_data(output_file, input_file):
       # print(subjects)
       # print(objects)
       # 遍历每一个主体和客体
+      # 限制负样本数目，一条样本提供2个负样本
+      neg_num = 0
+      neg_num_total = 2
+      neg_flag = True
       for sub in subjects:
         for obj in objects:
           if obj[1] in sub[1]:
@@ -66,8 +71,12 @@ def get_raw_data(output_file, input_file):
             output_file.write(sub[4] + '\t' + text + '\t' + str(sub_re_start) + '\t' +
               str(sub_re_end) + '\t' + str(obj_re_start) + '\t' + str(obj_re_end) + '\n')
           else:
-            output_file.write('未知' + '\t' + text + '\t' + str(sub_re_start) + '\t' +
-              str(sub_re_end) + '\t' + str(obj_re_start) + '\t' + str(obj_re_end) + '\n')
+            if neg_num < neg_num_total and neg_flag:
+              output_file.write('未知' + '\t' + text + '\t' + str(sub_re_start) + '\t' +
+                str(sub_re_end) + '\t' + str(obj_re_start) + '\t' + str(obj_re_end) + '\n')
+              neg_num += 1
+            else:
+              neg_flag = False
           # 恢复text
           text = tmp_text
       j+=1
