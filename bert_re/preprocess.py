@@ -119,7 +119,7 @@ def convert_examples_to_features(examples, max_seq_len, bert_dir, label2id):
     callback_info = []
 
     logger.info(f'Convert {len(examples)} examples to features')
-
+    longer_count = 0
     for i, example in enumerate(examples):
         ids = example.ids
         flag = False
