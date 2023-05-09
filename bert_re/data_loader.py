@@ -64,6 +64,8 @@ class Collate:
       batch_token_type_ids = []
       callback = []
       for i, (text, label ,ids) in enumerate(batch):
+          if len(text) == 0:
+            continue
           if len(text) > self.maxlen - 2:
             text = text[:self.maxlen - 2]
           tokens = [i for i in text]
