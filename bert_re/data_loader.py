@@ -77,15 +77,21 @@ class Collate:
           if flag:
             continue
           token_ids = self.tokenizer.convert_tokens_to_ids(tokens)
+          tmp_length = self.maxlen - len(token_ids)
+          batch_attention_mask.append([1] * len(token_ids) + [0] * tmp_length)
+          batch_token_type_ids.append([0] * self.maxlen)
+          token_ids = token_ids + [0] * tmp_length
           batch_token_ids.append(token_ids)  # 前面已经限制了长度
-          batch_attention_mask.append([1] * len(token_ids))
-          batch_token_type_ids.append([0] * len(token_ids))
           batch_labels.append(int(self.tag2id[label]))
           batch_ids.append([int(m) for m in ids])
           callback.append((text, label))
-      batch_token_ids = torch.tensor(sequence_padding(batch_token_ids, length=self.maxlen), dtype=torch.long, device=self.device)
-      attention_mask = torch.tensor(sequence_padding(batch_attention_mask, length=self.maxlen), dtype=torch.long, device=self.device)
-      token_type_ids = torch.tensor(sequence_padding(batch_token_type_ids, length=self.maxlen), dtype=torch.long, device=self.device)
+       
+      # batch_token_ids = torch.tensor(sequence_padding(batch_token_ids, length=self.maxlen), dtype=torch.long, device=self.device)
+      # attention_mask = torch.tensor(sequence_padding(batch_attention_mask, length=self.maxlen), dtype=torch.long, device=self.device)
+      # token_type_ids = torch.tensor(sequence_padding(batch_token_type_ids, length=self.maxlen), dtype=torch.long, device=self.device)
+      batch_token_ids = torch.tensor(batch_token_ids, dtype=torch.long, device=self.device)
+      attention_mask = torch.tensor(attention_mask, dtype=torch.long, device=self.device)
+      token_type_ids = torch.tensor(token_type_ids, dtype=torch.long, device=self.device)
       batch_labels = torch.tensor(batch_labels, dtype=torch.long, device=self.device)
       batch_ids = torch.tensor(batch_ids, dtype=torch.long, device=self.device)
 
