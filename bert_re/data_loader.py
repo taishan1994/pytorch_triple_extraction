@@ -92,8 +92,8 @@ class Collate:
       # attention_mask = torch.tensor(sequence_padding(batch_attention_mask, length=self.maxlen), dtype=torch.long, device=self.device)
       # token_type_ids = torch.tensor(sequence_padding(batch_token_type_ids, length=self.maxlen), dtype=torch.long, device=self.device)
       batch_token_ids = torch.tensor(batch_token_ids, dtype=torch.long, device=self.device)
-      attention_mask = torch.tensor(attention_mask, dtype=torch.long, device=self.device)
-      token_type_ids = torch.tensor(token_type_ids, dtype=torch.long, device=self.device)
+      attention_mask = torch.tensor(batch_attention_mask, dtype=torch.long, device=self.device)
+      token_type_ids = torch.tensor(batch_token_type_ids, dtype=torch.long, device=self.device)
       batch_labels = torch.tensor(batch_labels, dtype=torch.long, device=self.device)
       batch_ids = torch.tensor(batch_ids, dtype=torch.long, device=self.device)
 
