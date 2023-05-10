@@ -16,7 +16,7 @@ def get_ner_result(raw_text):
   # 命名实体识别相关
   model_name = 'bert_crf'
   ner_args = ner_config.Args().get_parser()
-  ner_args.bert_dir = './model_hub/chinese-roberta-wwm-ext/'
+  ner_args.bert_dir = './model_hub/chinese-bert-wwm-ext/'
   ner_args.gpu_ids = "-1"
   ner_args.use_lstm = 'False'
   ner_args.use_crf = 'True'
@@ -50,7 +50,7 @@ def get_re_result(entities, raw_text):
   print(subjects)
   print(objects)
   re_args = re_config.Args().get_parser()
-  re_args.bert_dir = './model_hub/chinese-roberta-wwm-ext/'
+  re_args.bert_dir = './model_hub/chinese-bert-wwm-ext/'
   re_args.gpu_ids = "-1"
   re_args.num_tags = 5
   re_args.max_seq_len = 512

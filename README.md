@@ -261,6 +261,69 @@
 
 后话：之前的duie关系抽取没有考虑到数据单独建一个文件夹，可酌情修改，主要是一些路径问题。而对于上述数据集而言，也可以增加一些约束，比如：**客体要约束在主体之后，而不能在主体之前**。延伸到方面级的情感分析也是一样的。
 
+## 总结
+
+如果你想完成上面的实验，以下是步骤：
+
+```python
+下载chinese-bert-wwm-ext到pytorch_triple_extraction/model_hub下
+==========================
+cd pytorch_triple_extraction/data/dgre/raw_data
+python process.py
+==========================
+cd pytorch_triple_extraction/bert_bilstm_crf_ner/
+python preprocess.py
+==========================
+python main.py \
+--bert_dir="../model_hub/chinese-bert-wwm-ext/" \
+--data_dir="../data/dgre/" \
+--log_dir="./logs/" \
+--output_dir="./checkpoints/" \
+--num_tags=5 \
+--seed=123 \
+--gpu_ids="0" \
+--max_seq_len=512 \
+--lr=3e-5 \
+--crf_lr=3e-2 \
+--other_lr=3e-4 \
+--train_batch_size=8 \
+--train_epochs=5 \
+--eval_batch_size=8 \
+--max_grad_norm=1 \
+--warmup_proportion=0.1 \
+--adam_epsilon=1e-8 \
+--weight_decay=0.01 \
+--lstm_hidden=128 \
+--num_layers=1 \
+--use_lstm="False" \
+--use_crf="True" \
+--dropout_prob=0.3 \
+--dropout=0.3 
+==========================
+cd pytorch_triple_extraction
+python re_process.py
+==========================
+cd pytorch_triple_extraction/bert_re
+python main.py \
+--bert_dir="../model_hub/chinese-bert-wwm-ext/" \
+--data_dir="../data/dgre/" \
+--log_dir="./logs/" \
+--output_dir="./checkpoints/" \
+--num_tags=5 \
+--seed=123 \
+--gpu_ids="0" \
+--max_seq_len=512 \
+--lr=3e-5 \
+--other_lr=3e-4 \
+--train_batch_size=8 \
+--train_epochs=1 \
+--eval_batch_size=8 \
+--dropout_prob=0.3 
+==========================
+cd pytorch_triple_extraction/
+python get_result.py
+```
+
 ****
 
 # 最初的介绍

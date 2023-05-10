@@ -252,7 +252,7 @@ if __name__ == '__main__':
 
     dataset = "dgre"
     args = config.Args().get_parser()
-    args.bert_dir = '../model_hub/chinese-roberta-wwm-ext/'
+    args.bert_dir = '../model_hub/chinese-bert-wwm-ext/'
     commonUtils.set_logger(os.path.join(args.log_dir, 'preprocess.log'))
 
     if dataset == "dgre":
