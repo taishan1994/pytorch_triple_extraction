@@ -1,17 +1,4 @@
 # pytorch_triplet_extraction
-延申：
-- 基于GlobalPointer的三元组抽取，又快又准确：https://github.com/taishan1994/pytorch_GlobalPointer_triple_extraction
-- 基于casrel的三元组抽取，使用更加方便：https://github.com/taishan1994/pytorch_casrel_triple_extraction
-****
-- 一种基于globalpointer的命名实体识别：https://github.com/taishan1994/pytorch_GlobalPointer_Ner
-- 一种基于TPLinker_plus的命名实体识别：https://github.com/taishan1994/pytorch_TPLinker_Plus_Ner
-- 一种one vs rest方法进行命名实体识别：https://github.com/taishan1994/pytorch_OneVersusRest_Ner
-- 一种级联Bert用于命名实体识别，解决标签过多问题：https://github.com/taishan1994/pytorch_Cascade_Bert_Ner
-- 一种多头选择Bert用于命名实体识别：https://github.com/taishan1994/pytorch_Multi_Head_Selection_Ner
-- 中文命名实体识别最新进展：https://github.com/taishan1994/awesome-chinese-ner
-- 信息抽取三剑客：实体抽取、关系抽取、事件抽取：https://github.com/taishan1994/chinese_information_extraction
-- 一种基于机器阅读理解的命名实体识别：https://github.com/taishan1994/BERT_MRC_NER_chinese
-- W2NER：命名实体识别最新sota：https://github.com/taishan1994/W2NER_predict
 ****
 **2023-05-12：** 
 
@@ -544,3 +531,17 @@ python get_result.py
 更为简单的三元组抽取，联合关系抽取，不用再先进行实体识别，再进行关系分类：
 - https://github.com/taishan1994/OneRel_chinese <br>
 - [信息抽取三剑客：实体抽取、关系抽取、事件抽取](https://github.com/taishan1994/chinese_information_extraction)
+
+# 延申：
+- 基于GlobalPointer的三元组抽取，又快又准确：https://github.com/taishan1994/pytorch_GlobalPointer_triple_extraction
+- 基于casrel的三元组抽取，使用更加方便：https://github.com/taishan1994/pytorch_casrel_triple_extraction
+****
+- 一种基于globalpointer的命名实体识别：https://github.com/taishan1994/pytorch_GlobalPointer_Ner
+- 一种基于TPLinker_plus的命名实体识别：https://github.com/taishan1994/pytorch_TPLinker_Plus_Ner
+- 一种one vs rest方法进行命名实体识别：https://github.com/taishan1994/pytorch_OneVersusRest_Ner
+- 一种级联Bert用于命名实体识别，解决标签过多问题：https://github.com/taishan1994/pytorch_Cascade_Bert_Ner
+- 一种多头选择Bert用于命名实体识别：https://github.com/taishan1994/pytorch_Multi_Head_Selection_Ner
+- 中文命名实体识别最新进展：https://github.com/taishan1994/awesome-chinese-ner
+- 信息抽取三剑客：实体抽取、关系抽取、事件抽取：https://github.com/taishan1994/chinese_information_extraction
+- 一种基于机器阅读理解的命名实体识别：https://github.com/taishan1994/BERT_MRC_NER_chinese
+- W2NER：命名实体识别最新sota：https://github.com/taishan1994/W2NER_predict
