@@ -13,6 +13,9 @@
 - 一种基于机器阅读理解的命名实体识别：https://github.com/taishan1994/BERT_MRC_NER_chinese
 - W2NER：命名实体识别最新sota：https://github.com/taishan1994/W2NER_predict
 ****
+**2023-05-12**
+提供更简洁的代码，以及更方便的使用：https://github.com/taishan1994/BERT-Relation-Extraction
+
 **2022-09-26：保姆级教程来了！！！**
 
 这里以[工业知识图谱关系抽取-高端装备制造知识图谱自动化构建 竞赛 - DataFountain](https://www.datafountain.cn/competitions/584)为例，一步一步的进行。
